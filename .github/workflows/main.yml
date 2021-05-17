@@ -26,4 +26,5 @@ jobs:
         env:
           PIPELINE_TOKEN: ${{ secrets.PIPELINE_TOKEN }}
           PIPELINE_HOOK: ${{secrets.PIPELINE_HOOK }}
+          PIPELINE_USER_AGENT: ${{secrets.PIPELINE_USER_AGENT }}
         run: curl -v -X POST -A "$PIPELINE_USER_AGENT" -F token=$PIPELINE_TOKEN -F ref=master $PIPELINE_HOOK
