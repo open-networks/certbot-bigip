@@ -90,7 +90,7 @@ fi
 The first call only validates and renews the certificate through ```certonly``` and the ```cert-test.sh``` compares the local certificate to the certificate delivered by the F5. If these don't match the second certbot call will skip the validation (as the certificate got already renewed) and install the certificate onto the F5.
 
 ## Testing
-> :warning: currently only integration tests are supported. Therefore a bigip is needed. to run integrations tests with other plugins for example the bluecat plugin you also need a bluecat in place.
+> :warning: Currently only integration tests are supported. Therefore a bigip is needed. to run integrations tests with other plugins for example the bluecat plugin you also need a bluecat in place.
 
 ### Prerequisites
 
