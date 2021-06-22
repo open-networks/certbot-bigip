@@ -28,7 +28,7 @@ custom_vs_list = os.getenv("BIGIP_CUSTOM_VS_LIST")
 def validate_certbot_certificate_delivery(stdout: str, stderr: str):
     # from https://www.regextester.com/96683
     regex_date = r"([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))"
-    regex_cert_expire_indicator = "(?<=certificate expires on)"
+    regex_cert_expire_indicator = "(?<=certificate expires on )"
     regex_check_result = regex_cert_expire_indicator + regex_date
     match = re.search(regex_check_result, stdout)
     if match is not None:
