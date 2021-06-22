@@ -18,6 +18,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: print release value
+      run: echo $GITHUB_REF
     - uses: actions/checkout@v2
     - name: Set up Python
       uses: actions/setup-python@v2
