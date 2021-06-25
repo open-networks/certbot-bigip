@@ -4,8 +4,8 @@ from setuptools import find_packages
 from setuptools import setup
 
 
-if os.environ.get("CI_COMMIT_TAG"):
-    version = os.environ["CI_COMMIT_TAG"]
+if os.environ.get("GITHUB_RELEASE_TAG"):
+    version = os.environ["GITHUB_RELEASE_TAG"]
 elif os.environ.get("CI_JOB_ID"):
     version = os.environ["CI_JOB_ID"]
 else:
