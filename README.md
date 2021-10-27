@@ -83,7 +83,7 @@ then
     --certbot-bigip:bigip-iapp '/internal/example.com.app/example.com_vs'
 else
   echo $(date)
-  echo "not installing greensight.on.at"
+  echo "not installing example.com"
 fi
 ```
 
