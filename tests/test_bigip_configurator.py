@@ -88,14 +88,14 @@ def test_upload_cert_to_bigip():
     config = Config()
 
     configurator = BigipConfigurator(config, "certbot_bigip")
-    configurator.cert_chain_name = "test_chain"
     configurator.prepare()
+    configurator.cert_chain_name = "test_chain"
 
     domain = "test01.certbot.on.at"
 
     from pathlib import Path
-    Path("tests/test_certificates").mkdir(parents=True, exist_ok=True)
 
+    Path("tests/test_certificates").mkdir(parents=True, exist_ok=True)
 
     cert_path = "tests/test_certificates/test_certbot_ong_at.pem"
     key_path = "tests/test_certificates/test_certbot_ong_at_key.pem"
