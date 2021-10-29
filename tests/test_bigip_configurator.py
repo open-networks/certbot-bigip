@@ -88,6 +88,7 @@ def test_upload_cert_to_bigip():
     config = Config()
 
     configurator = BigipConfigurator(config, "certbot_bigip")
+    configurator.self.cert_chain_name = "test_chain"
     configurator.prepare()
 
     domain = "test01.certbot.on.at"
