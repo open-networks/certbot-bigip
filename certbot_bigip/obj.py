@@ -632,9 +632,9 @@ class Bigip(object):
         try:
             irule_name = f"Certbot-Letsencrypt-{token}"
             if apm is True:
-                irule_text = f'when CLIENT_ACCEPTED {{\n  catch {{\n    ACCESS::restrict_irule_events disable\n  }}\n}}\nwhen HTTP_REQUEST priority 100 {{\n  if {{[HTTP::has_responded]}}{{return}}\n  if {{[HTTP::uri] equals "/.well-known/acme-challenge/{token}"}} {{\n    HTTP::respond 200 -version auto content "{http_response_content}" noserver \n  }}\n}}'
+                irule_text = f'when CLIENT_ACCEPTED {{\n  catch {{\n    ACCESS::restrict_irule_events disable\n  }}\n}}\nwhen HTTP_REQUEST priority 100 {{\n  if {{[HTTP::has_responded]}}{{return}}\n  if {{[HTTP::uri] equals "/.well-known/acme-challenge/{token}"}} {{\n    HTTP::respond 200 -version auto content "{http_response_content}" noserver \n  event disable\n  }}\n}}'
             else:
-                irule_text = f'when HTTP_REQUEST priority 100 {{\n  if {{[HTTP::has_responded]}}{{return}}\n  if {{[HTTP::uri] equals "/.well-known/acme-challenge/{token}"}} {{\n    HTTP::respond 200 -version auto content "{http_response_content}" noserver \n  }}\n}}'
+                irule_text = f'when HTTP_REQUEST priority 100 {{\n  if {{[HTTP::has_responded]}}{{return}}\n  if {{[HTTP::uri] equals "/.well-known/acme-challenge/{token}"}} {{\n    HTTP::respond 200 -version auto content "{http_response_content}" noserver \n  event disable\n  }}\n}}'
 
             self.mgmt.tm.ltm.rules.rule.create(
                 name=irule_name, partition=self.partition, apiAnonymous=irule_text
