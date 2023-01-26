@@ -581,9 +581,13 @@ class Bigip(object):
                 name = f"/{self.partition}/{domain}_clientssl"
             cssl_profile = {
                 "name": name,
-                "cert": f"/{self.partition}/{domain}_Letsencrypt",
-                "key": f"/{self.partition}/{domain}_Letsencrypt",
-                "chain": f"/{self.partition}/chain_Letsencrypt",
+                "cert-key-chain":{
+                    "default": {
+                        "cert": f"/{self.partition}/{domain}_Letsencrypt",
+                        "key": f"/{self.partition}/{domain}_Letsencrypt",
+                        "chain": f"/{self.partition}/chain_Letsencrypt",
+                    }
+                },
                 "defaultsFrom": self.clientssl_parent,
                 "app-service": iapp,
                 "sniDefault": sni_default,
