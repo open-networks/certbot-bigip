@@ -25,10 +25,6 @@ logging.getLogger("certbot_bigip").addHandler(streamhandler)
 logger = logging.getLogger(__name__)
 
 
-# Define a helper function to avoid verbose code
-z_util = zope.component.getUtility
-
-
 @zope.interface.implementer(interfaces.IAuthenticator, interfaces.IInstaller)
 @zope.interface.provider(interfaces.IPluginFactory)
 class BigipConfigurator(common.Plugin):
@@ -368,6 +364,17 @@ class BigipConfigurator(common.Plugin):
 
         return True
 
+    def renew_deploy(self, lineage, *args, **kwargs): # pylint: disable=missing-docstring,no-self-use
+        """
+        Renew certificates when calling `certbot renew`
+        """
+
+        # Run deploy_cert with the lineage params
+        self.deploy_cert(lineage.names()[0], lineage.cert_path, lineage.key_path, lineage.chain_path, lineage.fullchain_path)
+
+        return
+
+
     def enhance(self, domain, enhancement, options=None):
         """Enhance configuration.
 
@@ -462,3 +469,5 @@ class BigipConfigurator(common.Plugin):
         Mandatory member function of parent class.
         """
         return
+
+interfaces.RenewDeployer.register(BigipConfigurator)

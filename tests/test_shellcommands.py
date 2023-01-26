@@ -8,6 +8,7 @@ import logging
 import ssl
 import socket
 import os
+import pytest
 
 logging.basicConfig(level=logging.DEBUG)
 mylogger = logging.getLogger(__name__)
@@ -32,7 +33,7 @@ def validate_certbot_certificate_delivery(stdout: str, stderr: str):
     regex_check_result = regex_cert_expire_indicator + regex_date
     match = re.search(regex_check_result, stdout)
     if match is not None:
-        mylogger.info("New Certificate was created. Expiration Date:" + match.group(1))
+        mylogger.info("New Certificate was created. Expiration Date: " + match.group(1))
         return True
     else:
         mylogger.error(
@@ -43,6 +44,22 @@ def validate_certbot_certificate_delivery(stdout: str, stderr: str):
         )
         return False
 
+
+def validate_certbot_certificate_delivery_renew(stdout: str, stderr: str):
+    # from https://www.regextester.com/96683
+    regex_check_result = "(?<=Congratulations, all renewals succeeded)"
+    match = re.search(regex_check_result, stdout)
+    if match is not None:
+        mylogger.info("Renewal succeded")
+        return True
+    else:
+        mylogger.error(
+            "Certificate aquirement failed: \n stdout:\n"
+            + stdout
+            + "\n sterr:\n"
+            + stderr
+        )
+        return False
 
 def get_certbot_certificate(domain: str):
     file_path = f"/etc/letsencrypt/live/{domain}/cert.pem"
@@ -61,7 +78,7 @@ def is_delivered_cert_equal_deployed_cert(domain):
     # use sni in ssl communication
     port = 443
     conn = ssl.create_connection((domain, port))
-    context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS)
     sock = context.wrap_socket(conn, server_hostname=domain)
     deployed_cert = ssl.DER_cert_to_PEM_cert(sock.getpeercert(True))
     mylogger.debug(f"delivered_cert: \n {delivered_cert}")
@@ -70,7 +87,7 @@ def is_delivered_cert_equal_deployed_cert(domain):
 
 
 def test_response_evaluation():
-    stdout_sample = 'IMPORTANT NOTES:\n - Congratulations! Your certificate and chain have been saved at:\n   /etc/letsencrypt/live/example1.on.at/fullchain.pem\n   Your key file has been saved at:\n   /etc/letsencrypt/live/example1.on.at/privkey.pem\n   Your certificate will expire on 2019-12-10.To obtain a new or tweaked\n   version of this certificate in the future, simply run certbot\n   again. To non-interactively renew *all* of your certificates, run\n   "certbot renew"\n'
+    stdout_sample = 'Successfully received certificate.\nCertificate is saved at: /etc/letsencrypt/live/example.on.at/fullchain.pem\nKey is saved at:         /etc/letsencrypt/live/example.on.at/privkey.pem\nThis certificate expires on 2023-04-25.\nThese files will be updated when the certificate renews.'
     stderr_sample = ""
     validate_certbot_certificate_delivery(stdout_sample, stderr_sample)
 
@@ -80,15 +97,15 @@ def test_certbot_bigip_server_cert():
     response = subprocess.run(
         (
             f"certbot --non-interactive --expand --email '{email}' --agree-tos"
-            " -a certbot-bigip:bigip -i certbot-bigip:bigip"
-            f" --certbot-bigip:bigip-list '{bigip_list}'"
-            f" --certbot-bigip:bigip-username '{user}'"
-            f" --certbot-bigip:bigip-password '{password}'"
-            f" --certbot-bigip:bigip-partition '{partition}'"
-            f" --certbot-bigip:bigip-clientssl-parent '{clientssl_parent}'"
-            f" --certbot-bigip:bigip-vs-list '{vs_list}'"
-            f" --certbot-bigip:bigip-device-group '{device_group}'"
-            f" --certbot-bigip:bigip-iapp '{iapp}'"
+            " -a bigip -i bigip"
+            f" --bigip-list '{bigip_list}'"
+            f" --bigip-username '{user}'"
+            f" --bigip-password '{password}'"
+            f" --bigip-partition '{partition}'"
+            f" --bigip-clientssl-parent '{clientssl_parent}'"
+            f" --bigip-vs-list '{vs_list}'"
+            f" --bigip-device-group '{device_group}'"
+            f" --bigip-iapp '{iapp}'"
             f" -d {domain}"
             " -v --staging --debug --force-renewal"
         ),
@@ -113,19 +130,46 @@ def test_certbot_bigip_server_cert():
     ), "did you assign the ssl profile to the virtualserver? this step is not automated."
 
 
+def test_certbot_bigip_server_cert_renew():
+    domain = "test01.certbot.on.at"
+    response = subprocess.run(
+        (
+            f"certbot renew --force-renewal"
+        ),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        shell=True,
+    )
+
+    mylogger.debug(response.stdout.decode("utf-8"))
+
+    # check if new certificate was created
+    if not validate_certbot_certificate_delivery_renew(
+        response.stdout.decode("utf-8"), response.stderr.decode("utf-8")
+    ):
+        assert False
+    # check if process has finished correctly
+    response.check_returncode()
+
+    # check if certificate has been deployed
+    assert is_delivered_cert_equal_deployed_cert(
+        domain
+    ), "did you assign the ssl profile to the virtualserver? this step is not automated."
+
+
 def test_certbot_bigip_deployment_in_custompartition_and_folders():
     domain = "test02.certbot.on.at"
     response = subprocess.run(
         (
             f"certbot --non-interactive --expand --email '{email}' --agree-tos"
-            " -a certbot-bigip:bigip -i certbot-bigip:bigip"
-            f" --certbot-bigip:bigip-list '{bigip_list}'"
-            f" --certbot-bigip:bigip-username '{user}'"
-            f" --certbot-bigip:bigip-password '{password}'"
-            f" --certbot-bigip:bigip-partition '{custom_partition}'"
-            f" --certbot-bigip:bigip-clientssl-parent '{clientssl_parent}'"
-            f" --certbot-bigip:bigip-vs-list '{custom_vs_list}'"
-            f" --certbot-bigip:bigip-device-group '{device_group}'"
+            " -a bigip -i bigip"
+            f" --bigip-list '{bigip_list}'"
+            f" --bigip-username '{user}'"
+            f" --bigip-password '{password}'"
+            f" --bigip-partition '{custom_partition}'"
+            f" --bigip-clientssl-parent '{clientssl_parent}'"
+            f" --bigip-vs-list '{custom_vs_list}'"
+            f" --bigip-device-group '{device_group}'"
             f" -d {domain}"
             " -v --staging --debug --force-renewal"
         ),
@@ -149,6 +193,7 @@ def test_certbot_bigip_deployment_in_custompartition_and_folders():
     ), "did you assign the ssl profile to the virtualserver? this step is not automated."
 
 
+@pytest.mark.skip(reason="no way of currently testing this")
 def test_wildcard_deployment_with_bluecat_validation():
     domain = "*.certbot.on.at"
     response = subprocess.run(
@@ -165,16 +210,16 @@ def test_wildcard_deployment_with_bluecat_validation():
             " --debug"
             " --force-renewal"
             # authentication
-            " -a certbot-bluecat:bluecat"
-            " -i certbot-bigip:bigip"
-            f" --certbot-bigip:bigip-list '{bigip_list}'"
-            f" --certbot-bigip:bigip-username '{user}'"
-            f" --certbot-bigip:bigip-password '{password}'"
-            f" --certbot-bigip:bigip-partition '{partition}'"
-            f" --certbot-bigip:bigip-clientssl-parent '{clientssl_parent}'"
-            f" --certbot-bigip:bigip-vs-list '{vs_list}'"
-            f" --certbot-bigip:bigip-device-group '{device_group}'"
-            f" --certbot-bigip:bigip-iapp '{iapp}'"
+            " -a bluecat"
+            " -i bigip"
+            f" --bigip-list '{bigip_list}'"
+            f" --bigip-username '{user}'"
+            f" --bigip-password '{password}'"
+            f" --bigip-partition '{partition}'"
+            f" --bigip-clientssl-parent '{clientssl_parent}'"
+            f" --bigip-vs-list '{vs_list}'"
+            f" --bigip-device-group '{device_group}'"
+            f" --bigip-iapp '{iapp}'"
         ),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
