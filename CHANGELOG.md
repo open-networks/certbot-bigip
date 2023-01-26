@@ -1,5 +1,25 @@
 # certbot-bigip plugin change log
 
+## 1.2.0 - 2023-01-26
+
+### Added
+
+- Added renew_deploy functionality to trigger an install after a successfull renew
+- Added support for elliptic curve certificates
+
+### Changed
+
+- Updated Readme to new parameter syntax and renew behaviour
+
+### Removed
+
+-
+
+### Fixed
+
+- Fixed iRule to disable HTTP event after execution
+- Fixed Standalone handling
+
 ## 1.1.0 - 2021-05-01
 
 ### Added
