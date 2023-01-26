@@ -98,6 +98,7 @@ class Bigip(object):
             )
             raise errors.PluginError(msg)
         self.standalone = self._get_cluster_state()
+        logger.debug(f"standalone: {self.standalone}")
 
     def _split_fullpath(self, fullpath):
         """Return partition, subpath and name from object.
@@ -308,7 +309,7 @@ class Bigip(object):
             ss.raw["entries"]["https://localhost/mgmt/tm/cm/sync-status/0"][
                 "nestedStats"
             ]["entries"]["mode"]["description"]
-            == "Standalone"
+            == "standalone"
         ):
             return True
         else:
