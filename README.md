@@ -12,6 +12,10 @@ see certbot rquirements: <https://certbot.eff.org/docs/install.html#system-requi
 
 ## Install
 
+`pip install certbot-bigip`
+
+by installing the plugin you will also install all missing dependencies including certbot.
+
 ## Supported Features
 
 * verifies the domain via HTTP01 (challenge verification implemented through an iRule)
@@ -106,7 +110,7 @@ The first call only validates and renews the certificate through ```certonly``` 
 
 ## Testing
 
-> :warning: Currently only integration tests are supported. Therefore a bigip is needed. to run integrations tests with other plugins for example the bluecat plugin you also need a bluecat in place.
+> :warning: Currently only integration tests are supported. Therefore a bigip is needed. To run integrations tests with other plugins for example the bluecat plugin you also need a bluecat in place.
 
 ### Prerequisites
 
