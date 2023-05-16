@@ -10,6 +10,9 @@ import socket
 import os
 import pytest
 
+from os import system
+
+
 logging.basicConfig(level=logging.DEBUG)
 mylogger = logging.getLogger(__name__)
 
@@ -39,9 +42,10 @@ def validate_certbot_certificate_delivery(stdout: str, stderr: str):
         mylogger.error(
             "Certificate aquirement failed: \n stdout:\n"
             + stdout
-            + "\n sterr:\n"
+            + "\n stderr:\n"
             + stderr
         )
+        mylogger.debug(system("cat /var/log/letsencrypt/letsencrypt.log"))
         return False
 
 
@@ -56,9 +60,10 @@ def validate_certbot_certificate_delivery_renew(stdout: str, stderr: str):
         mylogger.error(
             "Certificate aquirement failed: \n stdout:\n"
             + stdout
-            + "\n sterr:\n"
+            + "\n stderr:\n"
             + stderr
         )
+        mylogger.debug(system("cat /var/log/letsencrypt/letsencrypt.log"))
         return False
 
 def get_certbot_certificate(domain: str):
@@ -140,8 +145,6 @@ def test_certbot_bigip_server_cert_renew():
         stderr=subprocess.PIPE,
         shell=True,
     )
-
-    mylogger.debug(response.stdout.decode("utf-8"))
 
     # check if new certificate was created
     if not validate_certbot_certificate_delivery_renew(
