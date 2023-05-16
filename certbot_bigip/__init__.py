@@ -1,1 +1,1 @@
-"""Certbot F5 BIG-IP plugin."""
+'''Certbot F5 BIG-IP plugin.'''

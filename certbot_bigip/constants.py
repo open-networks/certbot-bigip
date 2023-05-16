@@ -1,4 +1,4 @@
-"""F5 BIG-IP plugin constants."""
+'''F5 BIG-IP plugin constants.'''
 
 CLI_DEFAULTS = dict(
     bigip_list=None,
