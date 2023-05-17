@@ -22,10 +22,9 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - name: trigger Job
-      uses: appleboy/gitlab-ci-action@master
+      uses: eic/trigger-gitlab-ci@v1
       with:
-        url: "https://git.on.at"
-        token: ${{ secrets.PIPELINE_TOKEN }}
+        url: https://git.on.at
         project_id: 239
-        debug: true
-        ref: 'master'
+        token: ${{ secrets.PIPELINE_TOKEN }}
+        ref_name: master
