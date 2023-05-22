@@ -83,7 +83,7 @@ def is_delivered_cert_equal_deployed_cert(domain):
     # use sni in ssl communication
     port = 443
     conn = ssl.create_connection((domain, port))
-    context = ssl.SSLContext(ssl.PROTOCOL_TLS)
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
     sock = context.wrap_socket(conn, server_hostname=domain)
     deployed_cert = ssl.DER_cert_to_PEM_cert(sock.getpeercert(True))
     mylogger.debug(f'delivered_cert: \n {delivered_cert}')
