@@ -22,9 +22,38 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - name: trigger Job
-      uses: eic/trigger-gitlab-ci@v2
-      with:
-        url: https://git.on.at
-        project_id: 239
-        token: ${{ secrets.PIPELINE_TOKEN }}
-        ref_name: master
+      env:
+        URL: ${{ secrets.url }}
+        PROJECT_ID: ${{ secrets.project_id }}
+        TOKEN: ${{ secrets.token }}
+        REF_NAME: ${{ secrets.ref_name }}
+        USER_AGENT: ${{ secrets.user_agent }}
+      shell: bash
+      run: |
+        # Fail if no token
+        test -n "${TOKEN}" || echo "::warning ::No secret token was set!"
+        if [[ ! -z $USER_AGENT ]] ; then
+          user_agent = "-A \"$USER_AGENT\""
+        fi
+        # Print webhook call
+        echo curl -X POST \
+            --fail \
+            -o response.json \
+            -F "token=${TOKEN}" \
+            -F "ref=${REF_NAME}" \
+            ${user_agent} \
+            ${variable_args} \
+            ${URL}/api/v4/projects/${PROJECT_ID}/trigger/pipeline
+        # Call webhook
+        curl -X POST \
+            --fail \
+            -o response.json \
+            -F "token=${TOKEN}" \
+            -F "ref=${REF_NAME}" \
+            ${user_agent} \
+            ${variable_args} \
+            ${URL}/api/v4/projects/${PROJECT_ID}/trigger/pipeline
+        # Print and parse json
+        jq . response.json
+        echo "json=$(cat response.json)" >> $GITHUB_OUTPUT
+        echo "web_url=$(cat response.json | jq -c '.web_url')" >> $GITHUB_OUTPUT
