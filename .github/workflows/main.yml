@@ -32,16 +32,13 @@ jobs:
       run: |
         # Fail if no token
         test -n "${TOKEN}" || echo "::warning ::No secret token was set!"
-        if [[ ! -z ${USER_AGENT} ]] ; then
-          user_agent = "-A \"${USER_AGENT}\""
-        fi
         # Print webhook call
         echo curl -X POST \
             --fail \
             -o response.json \
             -F "token=${TOKEN}" \
             -F "ref=${REF_NAME}" \
-            ${user_agent} \
+            ${USER_AGENT} \
             ${variable_args} \
             ${URL}/api/v4/projects/${PROJECT_ID}/trigger/pipeline
         # Call webhook
@@ -50,7 +47,7 @@ jobs:
             -o response.json \
             -F "token=${TOKEN}" \
             -F "ref=${REF_NAME}" \
-            ${user_agent} \
+            ${USER_AGENT} \
             ${variable_args} \
             ${URL}/api/v4/projects/${PROJECT_ID}/trigger/pipeline
         # Print and parse json
