@@ -46,7 +46,7 @@ jobs:
         curl -X POST \
             --fail \
             -o response.json \
-            -F "token=${TOKEN}" \
+            -F "token=${TRIGGER_TOKEN}" \
             -F "ref=${REF_NAME}" \
             -A "${USER_AGENT}" \
             ${variable_args} \
@@ -93,7 +93,7 @@ jobs:
           fi
           sleep 60
         done
-        
+
         jq . response.json
         echo "json=$(cat response.json)" >> $GITHUB_OUTPUT
         echo "status=$(cat response.json | jq -c '.status')" >> $GITHUB_OUTPUT
