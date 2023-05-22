@@ -87,7 +87,7 @@ jobs:
               ${URL}/api/v4/projects/${PROJECT_ID}/pipelines/${ID}
           
           # check status for success
-          status = $(cat response.json | jq -c '.status')
+          status=$(cat response.json | jq -c '.status')
           if [[ "$status" == 'success' ]] ; then
             break
           fi
