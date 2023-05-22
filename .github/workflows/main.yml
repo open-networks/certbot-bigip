@@ -38,7 +38,7 @@ jobs:
             -o response.json \
             -F "token=${TOKEN}" \
             -F "ref=${REF_NAME}" \
-            ${USER_AGENT} \
+            -A "${USER_AGENT}" \
             ${variable_args} \
             ${URL}/api/v4/projects/${PROJECT_ID}/trigger/pipeline
         # Call webhook
@@ -47,7 +47,7 @@ jobs:
             -o response.json \
             -F "token=${TOKEN}" \
             -F "ref=${REF_NAME}" \
-            ${USER_AGENT} \
+            -A "${USER_AGENT}" \
             ${variable_args} \
             ${URL}/api/v4/projects/${PROJECT_ID}/trigger/pipeline
         # Print and parse json
