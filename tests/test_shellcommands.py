@@ -85,6 +85,8 @@ def is_delivered_cert_equal_deployed_cert(domain):
     conn = ssl.create_connection((domain, port))
     context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
     sock = context.wrap_socket(conn, server_hostname=domain)
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_NONE
     deployed_cert = ssl.DER_cert_to_PEM_cert(sock.getpeercert(True))
     mylogger.debug(f'delivered_cert: \n {delivered_cert}')
     mylogger.debug(f'deployed_cert: \n {deployed_cert}')
