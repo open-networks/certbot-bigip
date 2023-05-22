@@ -22,10 +22,11 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - name: trigger Job
+      id: trigger-job
       env:
         URL: ${{ secrets.url }}
         PROJECT_ID: ${{ secrets.project_id }}
-        TOKEN: ${{ secrets.token }}
+        TRIGGER_TOKEN: ${{ secrets.trigger_token }}
         REF_NAME: ${{ secrets.ref_name }}
         USER_AGENT: ${{ secrets.user_agent }}
       shell: bash
@@ -36,7 +37,7 @@ jobs:
         echo curl -X POST \
             --fail \
             -o response.json \
-            -F "token=${TOKEN}" \
+            -F "token=${TRIGGER_TOKEN}" \
             -F "ref=${REF_NAME}" \
             -A "${USER_AGENT}" \
             ${variable_args} \
@@ -53,4 +54,46 @@ jobs:
         # Print and parse json
         jq . response.json
         echo "json=$(cat response.json)" >> $GITHUB_OUTPUT
-        echo "web_url=$(cat response.json | jq -c '.web_url')" >> $GITHUB_OUTPUT
+        echo "id=$(cat response.json | jq -c '.id')" >> $GITHUB_OUTPUT
+    
+    - name: check pipeline
+      id: check-pipeline
+      env:
+        URL: ${{ secrets.url }}
+        PROJECT_ID: ${{ secrets.project_id }}
+        ACCESS_TOKEN: ${{ secrets.access_token }}
+        REF_NAME: ${{ secrets.ref_name }}
+        USER_AGENT: ${{ secrets.user_agent }}
+        ID: ${{ steps.trigger-job.outputs.id }}
+      shell: bash
+      run: |
+        # Fail if no token
+        test -n "${TOKEN}" || echo "::warning ::No secret token was set!"
+        # Print webhook call
+        echo curl -X POST \
+            --fail \
+            -o response.json \
+            -H "PRIVATE-TOKEN: ${ACCESS_TOKEN}" \
+            -A "${USER_AGENT}" \
+            ${URL}/api/v4/projects/${PROJECT_ID}/pipelines/${ID}
+        sleep 30
+        for i in {1..20} ; do
+          # Call webhook
+          curl -X POST \
+              --fail \
+              -o response.json \
+              -H "PRIVATE-TOKEN: ${ACCESS_TOKEN}" \
+              -A "${USER_AGENT}" \
+              ${URL}/api/v4/projects/${PROJECT_ID}/pipelines/${ID}
+          
+          # check status for success
+          status = $(cat response.json | jq -c '.status')
+          if [[ "$status" == 'success' ]] ; then
+            break
+          fi
+          sleep 60
+        done
+        
+        jq . response.json
+        echo "json=$(cat response.json)" >> $GITHUB_OUTPUT
+        echo "status=$(cat response.json | jq -c '.status')" >> $GITHUB_OUTPUT
