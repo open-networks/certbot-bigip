@@ -1,6 +1,6 @@
 # certbot-bigip plugin change log
 
-## 1.2.1 - 2023-05-xx
+## 1.2.1 - 2023-05-22
 
 ### Fixed
 
