@@ -32,7 +32,7 @@ jobs:
       shell: bash
       run: |
         # Fail if no token
-        test -n "${TOKEN}" || echo "::warning ::No secret token was set!"
+        test -n "${TRIGGER_TOKEN}" || echo "::warning ::No secret token was set!"
         # Print webhook call
         echo curl -X POST \
             --fail \
@@ -68,9 +68,9 @@ jobs:
       shell: bash
       run: |
         # Fail if no token
-        test -n "${TOKEN}" || echo "::warning ::No secret token was set!"
+        test -n "${ACCESS_TOKEN}" || echo "::warning ::No secret token was set!"
         # Print webhook call
-        echo curl -X POST \
+        echo curl \
             --fail \
             -o response.json \
             -H "PRIVATE-TOKEN: ${ACCESS_TOKEN}" \
@@ -79,7 +79,7 @@ jobs:
         sleep 30
         for i in {1..20} ; do
           # Call webhook
-          curl -X POST \
+          curl \
               --fail \
               -o response.json \
               -H "PRIVATE-TOKEN: ${ACCESS_TOKEN}" \
