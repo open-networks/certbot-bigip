@@ -88,12 +88,13 @@ jobs:
           
           # check status for success
           status=$(cat response.json | jq -c '.status')
-          if [[ "$status" == 'success' ]] ; then
+          if [[ "$status" == "success" ]] ; then
             break
           fi
           sleep 60
         done
 
         jq . response.json
+        jq -c '.status'
         echo "json=$(cat response.json)" >> $GITHUB_OUTPUT
         echo "status=$(cat response.json | jq -c '.status')" >> $GITHUB_OUTPUT
