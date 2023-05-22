@@ -22,7 +22,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - name: trigger Job
-      uses: eic/trigger-gitlab-ci@v1
+      uses: eic/trigger-gitlab-ci@v2
       with:
         url: https://git.on.at
         project_id: 239
