@@ -32,8 +32,8 @@ jobs:
       run: |
         # Fail if no token
         test -n "${TOKEN}" || echo "::warning ::No secret token was set!"
-        if [[ ! -z $USER_AGENT ]] ; then
-          user_agent = "-A \"$USER_AGENT\""
+        if [[ ! -z ${USER_AGENT} ]] ; then
+          user_agent = "-A \"${USER_AGENT}\""
         fi
         # Print webhook call
         echo curl -X POST \
