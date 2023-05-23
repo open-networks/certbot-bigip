@@ -90,6 +90,8 @@ jobs:
             status=$(cat response.json | jq -cr '.status')
             if [[ "$status" == "success" ]] ; then
               break
+            elif [[ "$status" == "failed" ]] ; then
+              exit 1
             fi
             sleep 60
           done
