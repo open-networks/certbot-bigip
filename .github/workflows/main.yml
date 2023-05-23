@@ -88,11 +88,8 @@ jobs:
             
             # check status for success
             status=$(cat response.json | jq -cr '.status')
-            if [[ "$status" == "success" ]] ; then
+            if [[ "$status" == "success" || "$status" == "failed" ]] ; then
               break
-            elif [[ "$status" == "failed" ]] ; then
-              jq -c '.status'
-              exit 1
             fi
             sleep 60
           done
@@ -101,3 +98,7 @@ jobs:
           jq -c '.status'
           echo "json=$(cat response.json)" >> $GITHUB_OUTPUT
           echo "status=$(cat response.json | jq -c '.status')" >> $GITHUB_OUTPUT
+          
+          if [[ "$status" == "failed" ]] ; then
+            exit 1
+          fi
