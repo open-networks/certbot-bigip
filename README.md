@@ -1,14 +1,17 @@
 # certbot-bigip
 
+## PROJECT IS ARCHIVED
+
+This project is not maintained anymore. A fork can be found [here](https://gitlab.com/emalzer/certbot-f5bigip) which is under active development.
+
 ## Requirements
 
 see certbot rquirements: <https://certbot.eff.org/docs/install.html#system-requirements>
 
-* F5
-  * The LetsEncrypt Chain needs to be at /Common/chain_Letsencrypt and in every other partition that uses this plugin. ( f.e.: /Partition/chain_Letsencrypt)
-      At the moment, the plugin checks if a corresponding certificate/chain is located in the same partition/folder as the clientssl profile that uses it.
-  * clientssl profile needs to be attached to the virtual server manually(DOMAIN_clientssl). At the moment, the plugin only updates the client profile but does not attach it to the virtual server.
-  * F5 SW version 14.x and higher
+*   F5
+    *   The LetsEncrypt Chain needs to be at /Common/chain_Letsencrypt and in every other partition that uses this plugin (f.e.: /Partition/chain_Letsencrypt). At the moment, the plugin checks if a corresponding certificate/chain is located in the same partition/folder as the clientssl profile that uses it.
+    *   clientssl profile needs to be attached to the virtual server manually(DOMAIN_clientssl). At the moment, the plugin only updates the client profile but does not attach it to the virtual server.
+    *   F5 SW version 14.x and higher
 
 ## Install
 
@@ -18,12 +21,12 @@ by installing the plugin you will also install all missing dependencies includin
 
 ## Supported Features
 
-* verifies the domain via HTTP01 (challenge verification implemented through an iRule)
-* Partitions and iApps
-* Standalone and HA setups (Active/Standby, Active/Active)
-* Creates the clientssl profile and attaches the certificate, key and chain
-  * Does not modify the clientssl profile if it already exists
-* Supports APM enabled virtual servers
+*   verifies the domain via HTTP01 (challenge verification implemented through an iRule)
+*   Partitions and iApps
+*   Standalone and HA setups (Active/Standby, Active/Active)
+*   Creates the clientssl profile and attaches the certificate, key and chain
+    *   Does not modify the clientssl profile if it already exists
+*   Supports APM enabled virtual servers
 
 ## Usage
 
@@ -56,8 +59,8 @@ certbot --non-interactive --expand --email 'admin@example.com' --agree-tos \
   --bigip-iapp '/internal/example.com.app/example.com'
 ```
 
-If the installation of a certificate during a ```certbot renew``` command somehow fails, certbot will not try to install the new certificate on a later run.
-You can implement a check if the local certificate matches the remote certificate and if not issue a ```certbot install --cert-name example.com``` command.
+If the installation of a certificate during a `certbot renew` command somehow fails, certbot will not try to install the new certificate on a later run.
+You can implement a check if the local certificate matches the remote certificate and if not issue a `certbot install --cert-name example.com` command.
 
 ```bash
 certbot renew 
@@ -106,11 +109,11 @@ else
 fi
 ```
 
-The first call only validates and renews the certificate through ```certonly``` parameter and the ```cert-test.sh``` compares the local certificate to the certificate delivered by the F5. If these don't match the second certbot call will skip the validation (as the certificate got already renewed) and install the certificate onto the F5.
+The first call only validates and renews the certificate through `certonly` parameter and the `cert-test.sh` compares the local certificate to the certificate delivered by the F5. If these don't match the second certbot call will skip the validation (as the certificate got already renewed) and install the certificate onto the F5.
 
 ## Testing
 
-> :warning: Currently only integration tests are supported. Therefore a bigip is needed. To run integrations tests with other plugins for example the bluecat plugin you also need a bluecat in place.
+> **_WARNING_** Currently only integration tests are supported. Therefore a bigip is needed. To run integrations tests with other plugins for example the bluecat plugin you also need a bluecat in place.
 
 ### Prerequisites
 
@@ -120,7 +123,7 @@ The first call only validates and renews the certificate through ```certonly``` 
 
 | ENV                    | default   | Example                                                      |
 | ---------------------- | --------- | ------------------------------------------------------------ |
-| BIGIP_EMAIL            |           | test@test.test                                               |
+| BIGIP_EMAIL            |           | <test@test.test>                                             |
 | BIGIP_USERNAME         |           | user                                                         |
 | BIGIP_PASSWORD         |           | secret                                                       |
 | BIGIP_LIST             |           | example-f5.local,example-f5-ha.local                         |
